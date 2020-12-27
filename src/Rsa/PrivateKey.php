@@ -36,7 +36,7 @@ class PrivateKey
         }
     }
 
-    public function encrypt(string $data): string
+    public function encrypt(string $data, int $block_size = 200): string
     {
         $encrypted = '';
         $data = str_split($data, $block_size);
@@ -62,7 +62,7 @@ class PrivateKey
         return true;
     }
 
-    public function decrypt(string $data): string
+    public function decrypt(string $data, int $block_size = 256): string
     {
         $decrypted = '';
         $data = str_split($data, $block_size);
