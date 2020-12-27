@@ -64,7 +64,16 @@ class PrivateKey
 
     public function decrypt(string $data): string
     {
-        openssl_private_decrypt($data, $decrypted, $this->privateKey, OPENSSL_PKCS1_OAEP_PADDING);
+        $decrypted = '';
+        $data = str_split($data, $block_size);
+        foreach($data as $chunk) {
+            $partial = '';
+            $ok = openssl_private_decrypt($chunk, $partial, $this->privateKey, OPENSSL_PKCS1_OAEP_PADDING);
+            if($ok === false) {
+                throw CouldNotDecryptData::make();
+            }
+            $decrypted .= $partial;
+        }
 
         if (is_null($decrypted)) {
             throw CouldNotDecryptData::make();
