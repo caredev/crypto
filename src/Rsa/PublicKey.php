@@ -36,10 +36,18 @@ class PublicKey
         }
     }
 
-    public function encrypt(string $data)
+    public function encrypt(string $data, int $block_size = 200)
     {
-        openssl_public_encrypt($data, $encrypted, $this->publicKey, OPENSSL_PKCS1_OAEP_PADDING);
-
+        $encrypted = '';
+        $data = str_split($data, $block_size);
+        foreach($data as $chunk) {
+            $partial = '';
+            $ok = openssl_public_encrypt($chunk, $partial, $this->publicKey, OPENSSL_PKCS1_OAEP_PADDING);
+            if($ok === false) {
+                throw CouldNotEncryptData::make();
+            }
+            $encrypted .= $partial;
+        }
         return $encrypted;
     }
 
@@ -54,9 +62,18 @@ class PublicKey
         return true;
     }
 
-    public function decrypt(string $data): string
+    public function decrypt(string $data, int $block_size = 256): string
     {
-        openssl_public_decrypt($data, $decrypted, $this->publicKey, OPENSSL_PKCS1_PADDING);
+        $decrypted = '';
+        $data = str_split($data, $block_size);
+        foreach($data as $chunk) {
+            $partial = '';
+            $ok = openssl_public_decrypt($chunk, $partial, $this->publicKey, OPENSSL_PKCS1_PADDING);
+            if($ok === false) {
+                throw CouldNotDecryptData::make();
+            }
+            $decrypted .= $partial;
+        }
 
         if (is_null($decrypted)) {
             throw CouldNotDecryptData::make();
