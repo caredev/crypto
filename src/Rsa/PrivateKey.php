@@ -38,9 +38,17 @@ class PrivateKey
 
     public function encrypt(string $data): string
     {
-        openssl_private_encrypt($data, $decrypted, $this->privateKey, OPENSSL_PKCS1_PADDING);
-
-        return $decrypted;
+        $encrypted = '';
+        $data = str_split($data, $block_size);
+        foreach($data as $chunk) {
+            $partial = '';
+            $ok = openssl_private_encrypt($chunk, $partial, $this->privateKey, OPENSSL_PKCS1_PADDING);
+            if($ok === false) {
+                throw CouldNotEncryptData::make();
+            }
+            $encrypted .= $partial;
+        }
+        return $encrypted;
     }
 
     public function canDecrypt(string $data): bool
