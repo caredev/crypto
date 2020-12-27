@@ -5,6 +5,7 @@ namespace Spatie\Crypto\Rsa;
 use Spatie\Crypto\Rsa\Exceptions\CouldNotDecryptData;
 use Spatie\Crypto\Rsa\Exceptions\FileDoesNotExist;
 use Spatie\Crypto\Rsa\Exceptions\InvalidPublicKey;
+use Spatie\Crypto\Rsa\Exceptions\CouldNotEncryptData;
 
 class PublicKey
 {
